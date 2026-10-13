@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — SUR-Integrator</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <span class="logo-icon">🛃</span>
+                <span class="logo-text">SUR-Integrator</span>
+            </a>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/Check">Проверить сделку</a>
+                <a href="/Add">Добавить данные</a>
+                <a href="/Login">Личный кабинет</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <p><strong>© 2026 SUR-Integrator.Web</strong></p>
+            <p>Интеграционный модуль для СВХ | Выпускная квалификационная работа</p>
+        </div>
+    </footer>
+</body>
+</html>

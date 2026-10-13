@@ -1,0 +1,112 @@
+﻿@page
+@model SUR_Integrator.Web.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Личный кабинет";
+
+    var totalDeals = Model.Deals?.Count ?? 0;
+    var totalValue = Model.Deals?.Sum(d => d.Value) ?? 0;
+    var totalPayments = Model.Deals?.Sum(d => d.Total) ?? 0;
+    var greenCount = Model.Deals?.Count(d => d.Risk == "green") ?? 0;
+    var yellowCount = Model.Deals?.Count(d => d.Risk == "yellow") ?? 0;
+    var redCount = Model.Deals?.Count(d => d.Risk == "red") ?? 0;
+}
+
+@if (Model.CurrentUser == null)
+{
+    <div class="alert alert-error">
+        Необходимо войти в систему. <a href="/Login" style="color: #991b1b; font-weight: bold;">Войти</a>
+    </div>
+}
+else
+{
+    var avatarLetter = Model.CurrentUser.ContactPerson.Length > 0
+        ? Model.CurrentUser.ContactPerson[0].ToString()
+        : "U";
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">@avatarLetter</div>
+            <div class="profile-info">
+                <h2>@Model.CurrentUser.CompanyName</h2>
+                <p class="profile-contact">@Model.CurrentUser.ContactPerson</p>
+                <p class="profile-email">📧 @Model.CurrentUser.Email</p>
+            </div>
+            <a href="/Login?logout=1" class="btn-logout">Выйти</a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+                <div class="stat-value">@totalDeals</div>
+                <div class="stat-label">Всего сделок</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+                <div class="stat-value">@totalValue.ToString("N0") ₽</div>
+                <div class="stat-label">Общая стоимость</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🧾</div>
+            <div class="stat-content">
+                <div class="stat-value">@totalPayments.ToString("N0") ₽</div>
+                <div class="stat-label">Таможенные платежи</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🚦</div>
+            <div class="stat-content">
+                <div class="stat-value">@greenCount / @yellowCount / @redCount</div>
+                <div class="stat-label">🟢 /  / 🔴 рисков</div>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin: 2rem 0 1rem; color: #1a1a2e;">📋 История сделок</h3>
+
+    <table class="dashboard-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Товар</th>
+                <th>Маршрут</th>
+                <th>Стоимость</th>
+                <th>Платежи</th>
+                <th>Риск</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model.Deals)
+            {
+                string riskBadge;
+                if (d.Risk == "green")
+                {
+                    riskBadge = "<span class='badge badge-green'> Зелёный</span>";
+                }
+                else if (d.Risk == "yellow")
+                {
+                    riskBadge = "<span class='badge badge-yellow'>🟡 Жёлтый</span>";
+                }
+                else
+                {
+                    riskBadge = "<span class='badge badge-red'>🔴 Красный</span>";
+                }
+
+                <tr>
+                    <td class="mono">@d.Id</td>
+                    <td>@d.CreatedAt.ToString("dd.MM.yyyy")</td>
+                    <td><strong>@d.Product</strong></td>
+                    <td class="route">@d.Sender → @d.Destination</td>
+                    <td>@d.Value.ToString("N0") ₽</td>
+                    <td><strong>@d.Total.ToString("N0") ₽</strong></td>
+                    <td>@Html.Raw(riskBadge)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

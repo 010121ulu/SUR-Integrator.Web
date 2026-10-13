@@ -1,0 +1,58 @@
+﻿@page
+@model SUR_Integrator.Web.Pages.CheckModel
+@{
+    ViewData["Title"] = "Проверка сделки";
+}
+
+<div class="card">
+    <h2>🔍 Проверка импортной сделки</h2>
+    <p class="hint">Введите ID декларации для получения статуса выпуска.</p>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-error">@Model.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label>ID Сделки</label>
+            <input type="text" asp-for="SearchId"
+                   placeholder="Введите ID"
+                   style="text-transform: uppercase; font-family: monospace; font-size: 1.2rem; text-align: center;" />
+        </div>
+        <button type="submit" class="btn-submit">Найти сделку</button>
+    </form>
+</div>
+
+@if (Model.ResultDeal != null)
+{
+    var d = Model.ResultDeal;
+    string riskClass = d.Risk == "green" ? "risk-green" : (d.Risk == "yellow" ? "risk-yellow" : "risk-red");
+    string riskText = d.Risk == "green" ? "🟢 ЗЕЛЁНЫЙ (Выпуск разрешен)" : (d.Risk == "yellow" ? "🟡 ЖЁЛТЫЙ (Доп. проверка)" : "🔴 КРАСНЫЙ (Досмотр)");
+
+    <div class="result-box">
+        <div class="risk-header @riskClass">
+            <h2>@riskText</h2>
+            <p>ID: @d.Id</p>
+        </div>
+
+        @if (d.Risk != "green" && !string.IsNullOrEmpty(d.Note))
+        {
+            <div class="inspector-note @(d.Risk == "red" ? "danger" : "")">
+                <strong>Комментарий инспектора:</strong><br>@d.Note
+            </div>
+        }
+
+        <table class="details-table">
+            <tr><td>Маршрут</td><td>@d.Sender → @d.Destination</td></tr>
+            <tr><td>Товар</td><td>@d.Product</td></tr>
+            <tr><td>Код ТНВЭД</td><td>@d.TnvedCode</td></tr>
+            <tr><td>Таможенная стоимость</td><td>@d.Value.ToString("N0") ₽</td></tr>
+            <tr><td>Ставка ввозной пошлины</td><td>@d.DutyRate%</td></tr>
+            <tr><td>Сумма ввозной пошлины</td><td>@d.Duty.ToString("N0") ₽</td></tr>
+            <tr><td>НДС (@d.VatRate%)</td><td>@d.Vat.ToString("N0") ₽</td></tr>
+            <tr><td>Таможенный сбор</td><td>@d.CustomsFee.ToString("N0") ₽</td></tr>
+            <tr class="total-row"><td><strong>ИТОГО таможенных платежей</strong></td><td><strong>@d.Total.ToString("N0") ₽</strong></td></tr>
+        </table>
+    </div>
+}

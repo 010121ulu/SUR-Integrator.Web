@@ -1,0 +1,48 @@
+﻿@page
+@model SUR_Integrator.Web.Pages.AddModel
+@{
+    ViewData["Title"] = "Добавить данные";
+}
+
+<div class="card">
+    <h2>📎 Загрузка данных для проверки</h2>
+    <p class="hint">Заполните информацию об импортной поставке. Система автоматически рассчитает платежи и присвоит ID.</p>
+
+    @if (!string.IsNullOrEmpty(Model.GeneratedId))
+    {
+        <div class="alert alert-success">
+            <strong>✅ Данные успешно загружены!</strong><br>
+            Ваш ID сделки: <span class="big-id">@Model.GeneratedId</span><br>
+            Используйте этот ID для проверки.
+        </div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label>Страна и город отправления</label>
+            <input type="text" name="sender" placeholder="Китай, г. Шанхай" required />
+        </div>
+        <div class="form-group">
+            <label>Страна и город назначения</label>
+            <input type="text" name="destination" placeholder="Россия, г. Владивосток" required />
+        </div>
+        <div class="form-group">
+            <label>Товар</label>
+            <input type="text" name="product" placeholder="Смартфоны" required />
+        </div>
+        <div class="form-group">
+            <label>Код ТНВЭД (10 цифр)</label>
+            <input type="text" name="tnvedCode" placeholder="8517 13 000 0" maxlength="14" />
+        </div>
+        <div class="form-group">
+            <label>Таможенная стоимость (RUB)</label>
+            <input type="number" name="value" placeholder="1000000" min="1" step="0.01" required />
+        </div>
+        <div class="form-group">
+            <label>Загрузка скан-копий документов</label>
+            <input type="file" multiple disabled style="background: #eee; cursor: not-allowed;" />
+            <small>*В демо-режиме загрузка файлов недоступна</small>
+        </div>
+        <button type="submit" class="btn-submit btn-accent">Отправить на проверку</button>
+    </form>
+</div>
