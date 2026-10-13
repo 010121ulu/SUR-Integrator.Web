@@ -1,0 +1,18 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY ["SUR-Integrator.Web.csproj", "./"]
+RUN dotnet restore "./SUR-Integrator.Web.csproj"
+COPY . .
+RUN dotnet build "SUR-Integrator.Web.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "SUR-Integrator.Web.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "SUR-Integrator.Web.dll"]
